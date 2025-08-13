@@ -1,8 +1,10 @@
 import os
 import requests
 from datetime import datetime
+import pytz
 
-DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
+# Your Discord webhook URL
+DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1405265493140439193/C2TG_Nb4Jj2MderDyyuLTSiO8h4i_VWFWZkIrwZKj-PukVRoFuV_rWy-90BVgBd8Z4FT"
 
 def send_discord_message(message: str):
     """Send a message to Discord via webhook."""
@@ -26,28 +28,28 @@ def check_service(name: str, url: str) -> bool:
         return False
 
 def main():
+    # Set timezone (example: US Eastern)
+    tz = pytz.timezone("US/Eastern")
+    now = datetime.now(tz).strftime("%Y-%m-%d %H:%M %Z")
+
     services = {
         "Steam API": "https://api.steampowered.com/ISteamWebAPIUtil/GetServerInfo/v1/",
         "Steam Store": "https://store.steampowered.com/",
-        "PSN": "https://status.playstation.com/data/status/es-MX.json"
     }
 
-    issues = []
+    status_lines = []
 
+    # Check Steam services
     for name, url in services.items():
-        if not check_service(name, url):
-            issues.append(f"{name} is down!")
+        online = check_service(name, url)
+        status_lines.append(f"{name}: {'✅ Online' if online else '⚠️ Down'}")
 
-    now = datetime.now().strftime("%Y-%m-%d %H:%M %Z")
+# PSN: provide clickable link instead of automated check
+    status_lines.append("PSN services: 🔗 [Check status](https://status.playstation.com/)")
 
-    # Always post daily status
-    if not issues:
-        message = f"✅ All servers healthy as of {now}."
-        send_discord_message(message)
-    else:
-        # Post alert if any server is down
-        message = f"⚠️ Gaming server issues detected as of {now}:\n" + "\n".join(issues)
-        send_discord_message(message)
+    # Format Discord message
+    message = f"⚠️ Gaming server status as of {now}:\n" + "\n".join(status_lines)
+    send_discord_message(message)
 
 if __name__ == "__main__":
     main()
