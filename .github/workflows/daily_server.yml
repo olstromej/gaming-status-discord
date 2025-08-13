@@ -2,10 +2,9 @@ name: Daily Server Status Check
 
 on:
   schedule:
-    # 7:10 PM EST = 00:10 UTC (next day)
-    # 7:10 PM EDT = 23:10 UTC (same day)
-    # This uses EDT timing — runs at 23:10 UTC
-    - cron: '20 23 * * *'
+    # 8:00 AM EST = 12:00 UTC (next day)
+ 
+    - cron: '0 12 * * *'
   workflow_dispatch:
 
 jobs:
