@@ -2,15 +2,19 @@ name: Daily Server Status Check
 
 on:
   schedule:
-    # Runs daily at 6:50 AM Eastern Time (adjusted for UTC)
-    # EST (UTC-5) → 11:50 UTC
-    - cron: '13 23 * * *'
-  workflow_dispatch:  # Allows manual runs anytime
+    # 7:10 PM EST = 00:10 UTC (next day)
+    # 7:10 PM EDT = 23:10 UTC (same day)
+    # This uses EDT timing — runs at 23:10 UTC
+    - cron: '20 23 * * *'
+  workflow_dispatch:
 
 jobs:
   check_status:
     runs-on: ubuntu-latest
     steps:
+      - name: Debug current UTC time
+        run: date -u
+
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -24,20 +28,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Debug Discord webhook secret
-        env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      - name: Check if DISCORD_WEBHOOK_URL is set
         run: |
           if [ -z "$DISCORD_WEBHOOK_URL" ]; then
-            echo "❌ DISCORD_WEBHOOK_URL is empty!"
+            echo "❌ DISCORD_WEBHOOK_URL is empty! Set it in your repo secrets."
             exit 1
           else
-            echo "✅ DISCORD_WEBHOOK_URL is set!"
+            echo "✅ Secret is set."
           fi
-          echo "Current UTC time: $(date -u)"
-          echo "Current Eastern time: $(TZ=America/New_York date)"
-
-      - name: Run monitor.py
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      - name: Run monitor script
         run: python monitor.py
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
