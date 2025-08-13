@@ -3,8 +3,8 @@ import requests
 from datetime import datetime
 import pytz
 
-# Your Discord webhook URL
-DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1405265493140439193/C2TG_Nb4Jj2MderDyyuLTSiO8h4i_VWFWZkIrwZKj-PukVRoFuV_rWy-90BVgBd8Z4FT"
+# Get Discord webhook URL from environment (for GitHub Actions)
+DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
 
 def send_discord_message(message: str):
     """Send a message to Discord via webhook."""
@@ -28,7 +28,7 @@ def check_service(name: str, url: str) -> bool:
         return False
 
 def main():
-    # Set timezone (example: US Eastern)
+    # Set timezone (US Eastern)
     tz = pytz.timezone("US/Eastern")
     now = datetime.now(tz).strftime("%Y-%m-%d %H:%M %Z")
 
@@ -44,7 +44,7 @@ def main():
         online = check_service(name, url)
         status_lines.append(f"{name}: {'✅ Online' if online else '⚠️ Down'}")
 
-# PSN: provide clickable link instead of automated check
+    # PSN: keep clickable link instead of automated check
     status_lines.append("PSN services: 🔗 [Check status](https://status.playstation.com/)")
 
     # Format Discord message
