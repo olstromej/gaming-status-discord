@@ -1,11 +1,10 @@
 name: Daily Server Status Check
 
-# Scheduled daily at 6:41 PM US Eastern
 on:
   schedule:
-    - cron: '41 22 * * *'  # 6:41 PM EDT (UTC 22:41)
-    - cron: '41 23 * * *'  # 6:41 PM EST (UTC 23:41)
-  workflow_dispatch:  # allows manual runs
+    # Runs daily at 6:50 AM Eastern Time (adjust for UTC)
+    - cron: '50 11 * * *'  # 6:50 AM EST (UTC-5)
+  workflow_dispatch:  # Allows manual runs anytime
 
 jobs:
   check_status:
@@ -24,12 +23,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Show workflow runtime
-        run: |
-          echo "UTC time: $(date -u)"
-          echo "Eastern time: $(TZ=America/New_York date)"
-
-      - name: Run monitor script
-        run: python monitor.py
+      - name: Debug environment
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          echo "DISCORD_WEBHOOK_URL is set? ${DISCORD_WEBHOOK_URL:+Yes}"
+          echo "Current UTC time: $(date -u)"
+          echo "Current Eastern time: $(TZ=America/New_York date)"
+
+      - name: Run monitor.py
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          python monitor.py
