@@ -6,17 +6,24 @@ import pytz
 # Get Discord webhook URL from environment (for GitHub Actions)
 DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
 
+DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
+
 def send_discord_message(message: str):
-    """Send a message to Discord via webhook."""
+    """Send a message to Discord via webhook with detailed logging."""
     if not DISCORD_WEBHOOK_URL:
         print("No Discord webhook URL set.")
         return
     try:
         response = requests.post(DISCORD_WEBHOOK_URL, json={"content": message})
+        print(f"Discord response status: {response.status_code}")
         response.raise_for_status()
         print("Discord message sent successfully.")
+    except requests.exceptions.HTTPError as http_err:
+        print(f"HTTP error occurred: {http_err}")
+    except requests.exceptions.RequestException as req_err:
+        print(f"Request error occurred: {req_err}")
     except Exception as e:
-        print(f"Failed to send Discord message: {e}")
+        print(f"Unexpected error: {e}")
 
 def check_service(name: str, url: str) -> bool:
     """Check if a service URL is reachable."""

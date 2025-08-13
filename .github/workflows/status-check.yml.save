@@ -2,7 +2,7 @@ name: Daily Server Status Check
 
 on:
   schedule:
-    - cron: '10 23 * * *'  # Runs every day at 08:00 AM EST (13:00 UTC)
+    - cron: '10 13 * * *'  # 08:10 AM EST (13:10 UTC)
   workflow_dispatch:  # Allows manual runs
 
 jobs:
@@ -22,9 +22,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run monitor script
-        run: python monitor.py
+      - name: Run monitor script with debug
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-
-
+        run: |
+          echo "Checking if Discord webhook URL is set..."
+          if [ -z "$DISCORD_WEBHOOK_URL" ]; then
+            echo "ERROR: DISCORD_WEBHOOK_URL is not set!"
+            exit 1
+          else
+            echo "Webhook URL is set."
+          fi
+          echo "Running monitor.py..."
+          python monitor.py
