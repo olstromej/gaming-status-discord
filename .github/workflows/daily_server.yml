@@ -4,7 +4,7 @@ on:
   schedule:
     # Runs daily at 6:50 AM Eastern Time (adjusted for UTC)
     # EST (UTC-5) → 11:50 UTC
-    - cron: '10 23 * * *'
+    - cron: '13 23 * * *'
   workflow_dispatch:  # Allows manual runs anytime
 
 jobs:
