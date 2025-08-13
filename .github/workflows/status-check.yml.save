@@ -2,7 +2,7 @@ name: Daily Server Status Check
 
 on:
   schedule:
-    - cron: '0 13 * * *'  # Runs every day at 08:00 AM EST (13:00 UTC)
+    - cron: '0 23 * * *'  # Runs every day at 08:00 AM EST (13:00 UTC)
   workflow_dispatch:  # Allows manual runs
 
 jobs:
